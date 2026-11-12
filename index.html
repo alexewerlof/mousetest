@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Mouse Test</title>
+		<meta
+			name="description"
+			content="A minimal mouse test: check every button, the scroll wheel and movement in all four directions on one simple interactive illustration."
+		/>
+		<meta name="color-scheme" content="light" />
+		<meta name="theme-color" content="#f2ede1" />
+		<link
+			rel="icon"
+			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f2ede1'/%3E%3Cpath d='M16 5c-4 0-6.5 2.6-6.5 7.5v6C9.5 24 12.2 27 16 27s6.5-3 6.5-8.5v-6C22.5 7.6 20 5 16 5Z' fill='none' stroke='%23625a6b' stroke-width='1.6'/%3E%3Cpath d='M16 5v7M9.5 15h13' fill='none' stroke='%23625a6b' stroke-width='1.2'/%3E%3C/svg%3E"
+		/>
+		<link rel="stylesheet" href="./styles.css" />
+		<script type="importmap">
+			{
+				"imports": {
+					"jj": "https://cdn.jsdelivr.net/npm/jj@3.0.0-rc.10/lib/bundle.min.js"
+				}
+			}
+		</script>
+		<script type="module" src="./js/main.js"></script>
+	</head>
+	<body>
+		<h1 class="sr-only">Mouse Test</h1>
+		<p class="sr-only">
+			Move the mouse in any direction to light up the matching arrow. Scroll the wheel to light
+			up the up or down arrow. Tilt the wheel sideways, if your mouse supports it, to shift it
+			left or right. Press any mouse button to highlight that button on the illustration.
+		</p>
+		<main class="stage">
+			<svg
+				id="mouse-test"
+				class="mouse-test"
+				viewBox="0 0 400 400"
+				role="img"
+				aria-labelledby="mouse-test-title"
+				fill="none"
+			>
+				<title id="mouse-test-title">A computer mouse surrounded by four direction arrows</title>
+				<defs>
+					<!-- Body silhouette: a flat-topped shell with near-straight flanks and
+					     a broad, rounded base. -->
+					<path
+						id="mouse-test-shell-path"
+						d="M200.6 95C205.2 95 209.8 96 214.2 97C218.7 98 223.2 99.2 227.5 100.9C231.7 102.6 236.2 104.5 239.7 107.2C243.3 110 246.5 113.6 248.8 117.5C251.1 121.3 252.5 125.9 253.6 130.4C254.6 134.8 254.7 139.5 254.9 144.1C255.1 148.7 254.7 153.3 254.6 157.9C254.4 162.5 254.2 167.2 254 171.8C253.8 176.4 253.6 181 253.5 185.6C253.3 190.2 253 194.8 253 199.4C253 204 253.3 208.6 253.6 213.2C253.9 217.8 254.5 222.4 254.8 227C255.2 231.6 255.7 236.2 255.8 240.8C255.9 245.4 256 250.1 255.5 254.6C254.9 259.2 254.2 263.8 252.6 268.1C251.1 272.4 249 276.7 246.4 280.4C243.8 284.2 240.6 287.7 237.2 290.7C233.8 293.7 229.9 296.4 225.9 298.6C221.9 300.7 217.6 302.7 213.2 303.9C208.8 305.1 204.1 305.8 199.5 305.7C195 305.7 190.3 304.8 185.9 303.5C181.5 302.2 177.3 300.2 173.3 297.9C169.3 295.6 165.5 292.9 162.1 289.8C158.7 286.8 155.4 283.3 152.9 279.5C150.4 275.8 148.4 271.5 146.9 267.1C145.5 262.8 144.8 258.2 144.3 253.6C143.9 249 144.1 244.4 144.2 239.8C144.4 235.2 144.9 230.6 145.2 226C145.5 221.4 146 216.8 146.1 212.2C146.2 207.6 146 202.9 145.7 198.3C145.5 193.7 144.9 189.2 144.7 184.6C144.4 180 144.3 175.3 144.4 170.7C144.6 166.1 145.3 161.6 145.5 157C145.6 152.4 145 147.7 145.2 143.1C145.4 138.5 145.5 133.8 146.6 129.4C147.7 125 149.4 120.5 151.8 116.7C154.3 113 157.8 109.6 161.4 106.9C165.1 104.2 169.4 102.2 173.6 100.5C177.9 98.8 182.4 97.7 186.9 96.8C191.4 95.9 196.1 95 200.6 95Z"
+					/>
+					<!-- Button cap: an inset contour that shadows the shell down both flanks
+					     and turns into the seam just below the wheel. -->
+					<path
+						id="mouse-test-cap-path"
+						d="M151.4 119.5V137C151.4 158 153 174 155.4 188Q155.4 192.2 162 192.2H238Q244.6 192.2 244.6 188C247 174 248.6 158 248.6 137V119.5"
+					/>
+					<clipPath id="mouse-test-shell-clip">
+						<use href="#mouse-test-shell-path" />
+					</clipPath>
+					<!-- Only the area enclosed by the cap contour is the button. Clipping
+					     the pressed fill to it keeps it off the sliver of shell between
+					     the silhouette and the cap line. The top edge is deliberately
+					     above the shell; the outer shell clip trims it. -->
+					<clipPath id="mouse-test-cap-clip">
+						<path
+							d="M151.4 80V137C151.4 158 153 174 155.4 188Q155.4 192.2 162 192.2H238Q244.6 192.2 244.6 188C247 174 248.6 158 248.6 137V80Z"
+						/>
+					</clipPath>
+					<!-- Side button: one tall capsule on the left flank, straddling the seam. -->
+					<rect
+						id="mouse-test-side-path"
+						x="144.4"
+						y="165.9"
+						width="7.8"
+						height="57.8"
+						rx="3.9"
+					/>
+					<clipPath id="mouse-test-side-clip">
+						<use href="#mouse-test-side-path" />
+					</clipPath>
+				</defs>
+				<g class="mouse-test__arrows" aria-hidden="true">
+					<g class="mouse-test__arrow mouse-test__arrow--up">
+						<path class="mouse-test__arrow-line" d="M173 61.3 200.2 41.5 227.4 61.3" />
+						<path class="mouse-test__arrow-gap" d="M173 61.3 200.2 41.5 227.4 61.3" />
+					</g>
+					<g class="mouse-test__arrow mouse-test__arrow--down">
+						<path class="mouse-test__arrow-line" d="M173 338.7 200.2 358.5 227.4 338.7" />
+						<path class="mouse-test__arrow-gap" d="M173 338.7 200.2 358.5 227.4 338.7" />
+					</g>
+					<g class="mouse-test__arrow mouse-test__arrow--left">
+						<path class="mouse-test__arrow-line" d="M106.4 170 87.4 195.9 106.4 221.8" />
+						<path class="mouse-test__arrow-gap" d="M106.4 170 87.4 195.9 106.4 221.8" />
+					</g>
+					<g class="mouse-test__arrow mouse-test__arrow--right">
+						<path class="mouse-test__arrow-line" d="M293.6 170 312.6 195.9 293.6 221.8" />
+						<path class="mouse-test__arrow-gap" d="M293.6 170 312.6 195.9 293.6 221.8" />
+					</g>
+				</g>
+				<g class="mouse-test__mouse">
+					<g clip-path="url(#mouse-test-shell-clip)">
+						<g clip-path="url(#mouse-test-cap-clip)">
+							<rect
+								class="mouse-test__button mouse-test__button--left"
+								x="120"
+								y="80"
+								width="80.4"
+								height="112.2"
+							/>
+							<rect
+								class="mouse-test__button mouse-test__button--right"
+								x="200.4"
+								y="80"
+								width="80"
+								height="112.2"
+							/>
+						</g>
+					</g>
+					<!-- The silhouette is painted over the fills, so a pressed button
+					     never thins the outline it sits behind. -->
+					<use class="mouse-test__shell" href="#mouse-test-shell-path" />
+					<use class="mouse-test__cap" href="#mouse-test-cap-path" />
+					<path class="mouse-test__centre" d="M200.4 95V192.2" />
+					<g class="mouse-test__wheel-group">
+						<rect
+							class="mouse-test__wheel"
+							x="193.3"
+							y="120.1"
+							width="13.7"
+							height="34.8"
+							rx="4.4"
+						/>
+						<rect
+							class="mouse-test__wheel-inner"
+							x="195.2"
+							y="123.3"
+							width="10"
+							height="28.4"
+							rx="3"
+						/>
+					</g>
+					<use class="mouse-test__side-backdrop" href="#mouse-test-side-path" />
+					<g clip-path="url(#mouse-test-side-clip)">
+						<!-- Physical layout: the front (upper) thumb button is Forward
+						     and the rear (lower) one is Back, matching real mice. -->
+						<rect
+							class="mouse-test__side-fill mouse-test__side-fill--forward"
+							x="144.4"
+							y="165.9"
+							width="7.8"
+							height="26.3"
+						/>
+						<rect
+							class="mouse-test__side-fill mouse-test__side-fill--back"
+							x="144.4"
+							y="192.2"
+							width="7.8"
+							height="31.5"
+						/>
+					</g>
+					<use class="mouse-test__side" href="#mouse-test-side-path" />
+				</g>
+			</svg>
+		</main>
+	</body>
+</html>

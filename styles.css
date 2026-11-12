@@ -1,0 +1,238 @@
+/* ---------------------------------------------------------------------------
+   Design tokens
+   --------------------------------------------------------------------------- */
+
+:root {
+	/* Colours */
+	--page-bg: #f2ede1;
+	--ink: #625a6b;
+	--ink-strong: #4b4453;
+	--accent: #6d5ba8;
+	--press-fill: #e7e0f1;
+
+	/* Motion */
+	--arrow-fade: 0.5s;
+	--arrow-tint: 0.2s;
+	--wheel-cue: 0.09s;
+
+	/* Layout */
+	--stage-size: min(94vmin, 36rem);
+	--line-width: 0.9;
+	--wheel-line-width: 1.3;
+	--wheel-inner-line-width: 0.8;
+	--arrow-width: 7.4;
+	--arrow-ring: 0.95;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout: the square stage is always centred and never clipped
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	block-size: 100%;
+}
+
+body {
+	margin: 0;
+	min-block-size: 100vh;
+	min-block-size: 100dvh;
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+	overscroll-behavior: none;
+	touch-action: none;
+	background-color: var(--page-bg);
+	color: var(--ink-strong);
+	-webkit-text-size-adjust: 100%;
+	-webkit-tap-highlight-color: transparent;
+	cursor: default;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.stage {
+	inline-size: var(--stage-size);
+	aspect-ratio: 1;
+}
+
+.mouse-test {
+	display: block;
+	inline-size: 100%;
+	block-size: 100%;
+	overflow: visible;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------------------
+   Illustration: idle state
+   --------------------------------------------------------------------------- */
+
+/* The whole drawing is a hairline outline, as in the reference: the shell, the
+   inset button-cap contour, the centre split and the side button. */
+.mouse-test__shell,
+.mouse-test__cap,
+.mouse-test__centre,
+.mouse-test__side,
+.mouse-test__wheel,
+.mouse-test__wheel-inner {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: var(--line-width);
+}
+
+/* The wheel sits over the seam and the centre split, so it is filled with the
+   page colour: those lines run behind it, and a sideways tilt reveals the line
+   on the side the wheel has moved away from. Its rim carries a slightly
+   heavier line than the rest of the drawing, as in the reference. */
+.mouse-test__wheel {
+	fill: var(--page-bg);
+	stroke-width: var(--wheel-line-width);
+}
+
+.mouse-test__wheel-inner {
+	stroke-width: var(--wheel-inner-line-width);
+}
+
+/* Button regions are plain rectangles clipped to the shell; they only show
+   while the matching mouse button is held down. */
+.mouse-test__button {
+	fill: transparent;
+	stroke: none;
+}
+
+/* The side button sits on top of the shell contour, so the backdrop is filled
+   with the page colour and hides the outline behind it. */
+.mouse-test__side-backdrop {
+	fill: var(--page-bg);
+	stroke: none;
+}
+
+.mouse-test__side-fill {
+	fill: transparent;
+	stroke: none;
+}
+
+/* Arrows are hollow ribbons: a thick ink stroke with a thinner page-coloured
+   stroke on top, which leaves just the outline of the band. */
+.mouse-test__arrow-line {
+	stroke: var(--ink);
+	stroke-width: var(--arrow-width);
+	transition: stroke var(--arrow-fade) ease;
+}
+
+.mouse-test__arrow-gap {
+	stroke: var(--page-bg);
+	stroke-width: calc(var(--arrow-width) - 2 * var(--arrow-ring));
+	transition: stroke var(--arrow-fade) ease;
+}
+
+/* ---------------------------------------------------------------------------
+   Direction indicators (pointer movement, wheel scroll and wheel tilt)
+   --------------------------------------------------------------------------- */
+
+/* Quick to appear, slow to fade: the 0.5s duration above only applies when the
+   class is removed. A lit direction is filled with the same lilac as a pressed
+   button and outlined with the accent, so both inputs read the same way. */
+.mouse-test.is-up .mouse-test__arrow--up .mouse-test__arrow-line,
+.mouse-test.is-down .mouse-test__arrow--down .mouse-test__arrow-line,
+.mouse-test.is-left .mouse-test__arrow--left .mouse-test__arrow-line,
+.mouse-test.is-right .mouse-test__arrow--right .mouse-test__arrow-line {
+	stroke: var(--accent);
+	transition-duration: var(--arrow-tint);
+}
+
+.mouse-test.is-up .mouse-test__arrow--up .mouse-test__arrow-gap,
+.mouse-test.is-down .mouse-test__arrow--down .mouse-test__arrow-gap,
+.mouse-test.is-left .mouse-test__arrow--left .mouse-test__arrow-gap,
+.mouse-test.is-right .mouse-test__arrow--right .mouse-test__arrow-gap {
+	stroke: var(--press-fill);
+	transition-duration: var(--arrow-tint);
+}
+
+/* Scroll and tilt feedback nudges the wheel so it is clear the wheel - not the
+   hand - produced the direction. Two custom properties keep the vertical and
+   horizontal nudges composable instead of overriding each other. */
+.mouse-test__wheel-group {
+	--wheel-shift-x: 0px;
+	--wheel-shift-y: 0px;
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: translate(var(--wheel-shift-x), var(--wheel-shift-y));
+	transition: transform var(--wheel-cue) ease;
+}
+
+.mouse-test.is-scroll-up .mouse-test__wheel-group {
+	--wheel-shift-y: -2.5px;
+}
+
+.mouse-test.is-scroll-down .mouse-test__wheel-group {
+	--wheel-shift-y: 2.5px;
+}
+
+.mouse-test.is-tilt-left .mouse-test__wheel-group {
+	--wheel-shift-x: -2.5px;
+}
+
+.mouse-test.is-tilt-right .mouse-test__wheel-group {
+	--wheel-shift-x: 2.5px;
+}
+
+/* ---------------------------------------------------------------------------
+   Button highlights: pressed is instant, released is instant
+   --------------------------------------------------------------------------- */
+
+.mouse-test.is-primary .mouse-test__button--left,
+.mouse-test.is-secondary .mouse-test__button--right,
+.mouse-test.is-back .mouse-test__side-fill--back,
+.mouse-test.is-forward .mouse-test__side-fill--forward {
+	fill: var(--press-fill);
+}
+
+.mouse-test.is-wheel .mouse-test__wheel,
+.mouse-test.is-wheel .mouse-test__wheel-inner {
+	fill: var(--press-fill);
+	stroke: var(--accent);
+}
+
+.mouse-test.is-back .mouse-test__side,
+.mouse-test.is-forward .mouse-test__side {
+	stroke: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities
+   --------------------------------------------------------------------------- */
+
+.sr-only {
+	position: absolute;
+	inline-size: 1px;
+	block-size: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--arrow-fade: 0.01s;
+		--arrow-tint: 0.01s;
+		--wheel-cue: 0s;
+	}
+
+	.mouse-test.is-scroll-up .mouse-test__wheel-group,
+	.mouse-test.is-scroll-down .mouse-test__wheel-group,
+	.mouse-test.is-tilt-left .mouse-test__wheel-group,
+	.mouse-test.is-tilt-right .mouse-test__wheel-group {
+		transform: none;
+	}
+}
