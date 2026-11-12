@@ -12,11 +12,14 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Finish a deployment that already started instead of cancelling it; a newer
+  # push simply queues and replaces the site when it completes.
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
