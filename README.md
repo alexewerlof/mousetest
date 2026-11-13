@@ -27,9 +27,13 @@ python3 -m http.server 8080
 
 ## Deploy
 
-Pushing to `main` publishes the site with GitHub Actions (`.github/workflows/pages.yml`).
+GitHub Pages serves this folder straight from `main` — no workflow, no build:
 
-One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+- **Settings → Pages → Source: Deploy from a branch**
+- Branch `main`, folder `/` (root)
+
+Pushing to `main` republishes the site a minute later. Everything in the repository is public
+under the Pages URL, so keep notes and scratch files out of it.
 
 ## Files
 
@@ -41,7 +45,6 @@ js/main.js                  bootstrap: load the drawing, insert it, wire it up
 js/mouse-art.js             fetch, repair and validate the artwork
 js/mouse-test.js            input events, state and class rendering
 js/back-guard.js            keeps the browser's back button on the page
-.github/workflows/pages.yml GitHub Pages deployment
 ```
 
 Working on the code or the drawing? See [AGENTS.md](AGENTS.md) for the artwork contract,

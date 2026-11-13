@@ -4,8 +4,8 @@ Instructions for AI agents working on this repository.
 
 ## What this is
 
-A static, no-build, no-dependency mouse-test page. GitHub Actions publishes the repository root
-to GitHub Pages on every push to `main`.
+A static, no-build, no-dependency mouse-test page. GitHub Pages serves the repository root
+directly from `main`; there is no CI, no workflow and no build step to run.
 
 - Live: <https://alexewerlof.github.io/mousetest/>
 - Entry point: `index.html` → `js/main.js` → `js/mouse-art.js` → `js/mouse-test.js`
@@ -34,7 +34,6 @@ Chromium works well); do not claim a visual change works without checking it on 
 | `js/mouse-art.js`             | Fetch, parse, normalise, flatten inline styles, validate ids, `ArtworkError`     |
 | `js/mouse-test.js`            | Input listeners → state objects → class toggling (the only render path)          |
 | `js/back-guard.js`            | Absorbs browser back-button presses by keeping one spare history entry           |
-| `.github/workflows/pages.yml` | Uploads the repo root and deploys it to GitHub Pages                             |
 
 The artwork is the owner's canvas. Never rewrite `assets/mouse.svg` wholesale, re-draw it, or
 "fix" its geometry or transforms unless explicitly asked.
@@ -109,21 +108,17 @@ The owner edits the SVG in BoxySVG. Known behaviour:
 
 ## Deployment
 
-`.github/workflows/pages.yml` runs on pushes to `main` (and manual dispatch):
+Pages is configured as **Deploy from a branch**: source `main`, folder `/`. A push to `main`
+republishes the repository root as-is about a minute later.
 
-1. `actions/checkout@v7`
-2. `actions/configure-pages@v6`
-3. `actions/upload-pages-artifact@v5` with `path: .` — it excludes `.git`, `.github` and other
-   dotfiles by default
-4. `actions/deploy-pages@v5`, exposing `steps.deployment.outputs.page_url`
-
-The job needs `contents: read`, `pages: write` and `id-token: write`, and the `github-pages`
-environment. Pages must be configured once with **Source: GitHub Actions** in the repository
-settings; without that the deploy step fails. There is no `CNAME`; a custom domain only needs one
-plus the Pages settings, no workflow change.
-
-Keep action pins on current major tags and keep `runs-on` a literal (the `env` context is not
-allowed there).
+- Do not add a Pages workflow. An earlier `actions/deploy-pages` workflow failed at
+  `configure-pages` and is deliberately gone; branch deployment is the whole pipeline.
+- Everything committed becomes public under the Pages URL, including `README.md` and
+  `AGENTS.md`. Never commit scratch files, secrets or large binaries.
+- Jekyll processes the site server-side, which is harmless here: no page has front matter, and
+  the only dot-directories (`.git`, `.vscode`) and underscore paths are already ignored. A
+  `.nojekyll` file is not needed unless files with front matter are ever added.
+- There is no `CNAME`. A custom domain only needs that file plus the Pages settings.
 
 ## Verification checklist
 
